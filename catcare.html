@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hi I'm CHIO! Leah's cat. Idk where she is so u gotta take care of me nyow!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+
+        body {
+            margin: 0;
+            background: linear-gradient(160deg, #ffe6e6 0%, #fff7f8 100%);
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+            user-select: none;
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 3rem;
+            color: #de517d;
+            text-shadow: 1px 1px 5px #f7c8d2;
+            user-select: none;
+        }
+
+        #game-area {
+            margin-top: 20px;
+            width: 320px;
+            height: 420px;
+            position: relative;
+            background: #ffe9f1;
+            border-radius: 20px;
+            box-shadow: 0 12px 25px rgba(222, 81, 125, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            overflow: visible;
+        }
+
+        #cat-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin-bottom: 25px;
+            cursor: default;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            overflow: visible;
+        }
+
+        #cat-image {
+            max-width: 250px;
+            height: auto;
+            width: 250px;
+            transition: transform 0.4s ease;
+            user-select: none;
+            pointer-events: none;
+            filter: drop-shadow(0 5px 6px rgba(0,0,0,0.25));
+            position: relative;
+            bottom: 0;
+        }
+
+        /* Controls (feed, pet) */
+        #controls {
+            display: flex;
+            gap: 20px;
+        }
+        button {
+            background: #de517d;
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+            padding: 14px 22px;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 8px 13px rgba(222, 81, 125, 0.5);
+            transition: background 0.3s ease;
+            user-select: none;
+            font-weight: 600;
+        }
+        button:disabled {
+            background: #f1bec6;
+            cursor: default;
+            box-shadow: none;
+        }
+        button:hover:not(:disabled) {
+            background: #ee4170;
+        }
+
+        /* Cat running animation container */
+        #run-container {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            width: 320px;
+            height: 280px;
+            overflow: visible;
+            pointer-events: none;
+            display: none;
+        }
+
+        #run-cat-image {
+            position: absolute;
+            bottom: 0;
+            max-width: 140px;
+            height: auto;
+            transition: transform 0.4s ease;
+            user-select: none;
+            filter: drop-shadow(0 3px 4px rgba(0,0,0,0.2));
+            animation: run-move 4s linear forwards;
+        }
+
+        @keyframes run-move {
+            0% {
+                left: 0;
+                opacity: 1;
+                filter: drop-shadow(0 3px 4px rgba(0,0,0,0.2));
+            }
+            100% {
+                left: 320px;
+                opacity: 0;
+                filter: drop-shadow(0 0 0 rgba(0,0,0,0));
+            }
+        }
+
+        /* Envelope after cat runs */
+        #envelope {
+            position: fixed;
+            bottom: 40px;
+            right: 20px;
+            width: 120px;
+            height: 90px;
+            background: #f7f0dc;
+            border: 3px solid #d7cfa0;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(199, 178, 130, 0.6);
+            cursor: pointer;
+            display: none;
+            user-select: none;
+            transition: transform 0.3s ease;
+        }
+        #envelope:hover {
+            transform: scale(1.1);
+        }
+        #envelope::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 120px;
+            height: 90px;
+            background:
+                linear-gradient(135deg, transparent 50%, #a89e60 50%),
+                linear-gradient(45deg, transparent 50%, #a89e60 50%);
+            background-repeat: no-repeat;
+            background-position: top left, top right;
+            background-size: 50% 50%;
+            border-radius: 14px;
+        }
+        #envelope-flap {
+            position: absolute;
+            top: 7px;
+            left: 50%;
+            width: 110px;
+            height: 70px;
+            margin-left: -55px;
+            background: #e0d49b;
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            box-shadow: inset 0 1px 6px rgba(255,255,255,0.3);
+        }
+
+        /* Love letter text modal */
+        #love-letter {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            max-width: 400px;
+            max-height: 80%; /* Atur tinggi maksimum */
+            overflow-y: auto; /* Tambahkan scroll vertikal */
+            transform: translate(-50%, -50%);
+            background: #fff8f9;
+            padding: 25px 35px;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(222, 81, 125, 0.4);
+            color: #a92b58;
+            font-size: 1.2rem;
+            line-height: 1.6em;
+            text-align: center;
+            display: none;
+        }
+        #love-letter h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 2rem;
+            color: #de517d;
+        }
+        #love-letter button {
+            margin-top: 20px;
+            background: #de517d;
+            color: white;
+            padding: 10px 22px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 8px 13px rgba(222, 81, 125, 0.6);
+            user-select: none;
+            font-weight: 600;
+        }
+        #love-letter button:hover {
+            background: #c04166;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hi I'm CHIO! Leah's cat. Idk where she is so u gotta take care of me nyow!</h1>
+
+    <div id="game-area">
+        <div id="cat-container" aria-label="Friendly interactive cat" role="img">
+            <img id="cat-image" src="https://png.pngtree.com/png-vector/20231120/ourmid/pngtree-cute-cat-cartoon-vector-png-image_10653096.png" alt="Cute cartoon cat" />
+        </div>
+
+        <div id="controls" aria-label="Cat care controls">
+            <button id="feed-btn" aria-label="Feed me">Feed me 🥩</button>
+            <button id="pet-btn" aria-label="Pet me" disabled>Pet me 🐾</button>
+        </div>
+
+        <div id="run-container" aria-hidden="true" aria-live="polite" aria-atomic="true">
+            <img id="run-cat-image" src="https://png.pngtree.com/png-vector/20231120/ourmid/pngtree-cute-cat-cartoon-vector-png-image_10653096.png" alt="Cat running carrying letter" />
+        </div>
+    </div>
+
+    <div id="envelope" tabindex="0" role="button" aria-label="Open love letter">
+        <div id="envelope-flap"></div>
+    </div>
+
+    <div id="love-letter" role="dialog" aria-modal="true" aria-labelledby="love-title" tabindex="-1">
+        <h2 id="love-title">Oh! She's got something for nyouww! ❤️</h2>
+        <p>First of all, happy birthday to one of the most precious person in my life. I hope this year brings you so much peace, happiness, and healing energy (especially from all the academic stress you’ve been carrying). I’m really rooting for you to push through it all and finally breathe a lil easier soon. You got this! Even though we barely talk lately, I want you to know I’m always cheering for you from a distance. I’m always proud of you, of everything you do. I stalk your stories and every time I see you doing well, it makes me so happy. I genuinely hope life is treating you kindly, wherever you are.</p>
+        <p>And now here’s the part I’m bad at saying out loud (because yes, I’m still full of gengsi), but Dinda… you’ve always been the friend for me. Not just any friend, you’re home. You’re not just who I run to when I’m sad, but also who I want to share my happy moments with. And I pray that fate doesn’t take that away from me, ever. Because honestly, I’d be so broken if we drift apart. I love you so much and miss you even more. Out of everyone in this big world, you’re the one person I can call my unconditional love. Even if one day you decide to walk away, I’ll still love you. That’s just how much you mean to me. I thank Allah every day for letting me know you. You’ve been such a blessing in my life. Thank you for always being there, always being you. Sorry if I’m being extra right now, I’m lowkey embarrassed HAHA.</p>
+        <p>Oh btw, remember all those super old photos of us from forever ago? They’re gone. My laptop died on me recently and wiped everything, including our pics and my thesis (yeah it’s been a mentally rough few months). Since those photos are lost, I guess that means… we gotta make new memories? If you’re down for it hehe. Anyway, back to the main thing: HAPPY BIRTHDAY AGAIN DINDA! I love you. I miss you. And I’m so proud of you. Always.</p>
+        <button id="close-letter">Close</button>
+    </div>
+
+    <script>
+        const catImage = document.getElementById('cat-image');
+        const feedBtn = document.getElementById('feed-btn');
+        const petBtn = document.getElementById('pet-btn');
+        const runContainer = document.getElementById('run-container');
+        const runCatImage = document.getElementById('run-cat-image');
+        const envelope = document.getElementById('envelope');
+        const loveLetter = document.getElementById('love-letter');
+        const closeLetterBtn = document.getElementById('close-letter');
+
+        // Weight states via scale factors for the cat image
+        const weightScales = [1, 1.15, 1.35, 1.55];
+        let currentWeightIndex = 0;
+        let feedCount = 0;
+
+        // Update cat scale on feed
+        function updateCatScale() {
+            const scale = weightScales[currentWeightIndex];
+            catImage.style.transform = `scale(${scale})`;
+        }
+
+        // Try increasing weight if enough feed
+        function tryIncreaseWeight() {
+            if (currentWeightIndex >= weightScales.length - 1) {
+                petBtn.disabled = false;
+                feedBtn.disabled = true;
+                return;
+            }
+            if (feedCount >= 3 * (currentWeightIndex + 1)) {
+                currentWeightIndex++;
+                updateCatScale();
+            }
+            if (currentWeightIndex >= weightScales.length - 1) {
+                petBtn.disabled = false;
+                feedBtn.disabled = true;
+            }
+        }
+
+        feedBtn.addEventListener('click', () => {
+            feedCount++;
+            tryIncreaseWeight();
+        });
+
+        petBtn.addEventListener('click', () => {
+            petBtn.disabled = true;
+            runContainer.style.display = 'block';
+            runContainer.setAttribute('aria-hidden', 'false');
+            catImage.style.display = 'none';
+
+            runCatImage.style.animation = 'run-move 4s linear forwards';
+            runCatImage.style.left = '0';
+
+            runCatImage.addEventListener('animationend', () => {
+                runContainer.style.display = 'none';
+                envelope.style.display = 'block';
+                envelope.setAttribute('tabindex', '0');
+                envelope.focus();
+            }, { once: true });
+        });
+
+        // Envelope open
+        envelope.addEventListener('click', () => {
+            showLoveLetter();
+        });
+        envelope.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                showLoveLetter();
+            }
+        });
+
+        function showLoveLetter() {
+            envelope.style.display = 'none';
+            loveLetter.style.display = 'block';
+            loveLetter.focus();
+        }
+
+        closeLetterBtn.addEventListener('click', () => {
+            loveLetter.style.display = 'none';
+        });
+
+        // Initial scale
+        updateCatScale();
+    </script>
+</body>
+</html>
